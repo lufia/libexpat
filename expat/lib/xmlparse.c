@@ -7957,6 +7957,7 @@ unsignedCharToPrintable(unsigned char c) {
     return "dead code";
   }
   assert(0); /* never gets here */
+  return NULL;
 }
 
 #endif /* XML_DTD */

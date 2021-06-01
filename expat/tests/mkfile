@@ -1,7 +1,9 @@
 </sys/src/ape/config
 
-CFLAGS=-c -FV\
+CFLAGS=-c -FV+\
+	-I..\
 	-I../lib\
+	-Icompat\
 	-D_POSIX_SOURCE\
 	-D_SUSV2_SOURCE\
 	-D_PLAN9_SOURCE\
@@ -14,11 +16,12 @@ OFILES=\
 	minicheck.$O\
 	runtests.$O\
 
-LIB=../lib/libexpat.a
+LIB=/$objtype/lib/ape/libexpat.a
 
 HFILES=\
 	chardata.h\
 	structdata.h\
+	minicheck.h\
 	memcheck.h\
 	minicheck.h\
 

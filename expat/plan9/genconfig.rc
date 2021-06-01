@@ -1,0 +1,51 @@
+#!/bin/rc
+# usage: genconfig {config} [file ...]
+
+flag e +
+rfork e
+
+awk -v 'config='^$1 '
+BEGIN {
+	while((getline <config) > 0){
+		s = substr($0, length($1)+1)
+		sub(/^[ \t]+/, "", s)
+		defines[$1] = s
+	}
+	close(config)
+
+	ignores["size_t"] = 1
+	ignores["off_t"] = 1
+}
+$1 == "#cmakedefine" && NF == 2 && !($2 in ignores) {
+	if($2 in defines){
+		v = expandvar(defines[$2])
+		printf "#define\t%s\t%s\n", $2, v
+	}
+}
+$1 == "#cmakedefine" && NF > 2 && !($2 in ignores) {
+	key = $2
+	$1 = $2 = ""
+	sub(/^[ \t]+/, "", $0)
+	printf "#define\t%s\t%s\n", key, expand($0)
+}
+function expandvar(s,		v,t) {
+	while(match(s, /\${[a-zA-Z0-9_]+}/) > 0){
+		v = substr(s, RSTART+2, RLENGTH-3)
+		t[1] = substr(s, 1, RSTART-1)
+		t[2] = defines[v]
+		t[3] = substr(s, RSTART+RLENGTH)
+		s = t[1] t[2] t[3]
+	}
+	return s
+}
+function expand(s,		v,t) {
+	while(match(s, /@[a-zA-Z0-9_]+@/) > 0){
+		v = substr(s, RSTART+1, RLENGTH-2)
+		t[1] = substr(s, 1, RSTART-1)
+		t[3] = substr(s, RSTART+RLENGTH)
+		t[2] = expandvar(defines[v])
+		s = t[1] t[2] t[3]
+	}
+	return s
+}
+' $*(2-)

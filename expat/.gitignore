@@ -18,6 +18,7 @@ config.log
 config.status
 expat_config.h.in
 expat_config.h
+expat_config.plan9
 libtool
 expat.ncb
 expat.opt

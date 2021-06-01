@@ -1,33 +1,42 @@
 </sys/src/ape/config
 
-CFLAGS=-c -FTV\
+CFLAGS=-c -FTV+\
+	-I..\
 	-D_POSIX_SOURCE\
 	-D_SUSV2_SOURCE\
 	-D_PLAN9_SOURCE\
-	-DHAVE_ARC4RANDOM_BUF\
 
 OFILES=\
-	loadlibrary.$O\
 	xmlparse.$O\
 	xmlparse_plan9.$O\
 	xmltok.$O\
 	xmlrole.$O\
 
-HFILES=\
-	ascii.h\
-	asciitab.h\
+LIBHFILES=\
 	expat.h\
 	expat_external.h\
+	../expat_config.h\
+
+HFILES=\
+	 $LIBHFILES\
+	ascii.h\
+	asciitab.h\
+	expat_external.h\
+	expat.h\
 	iasciitab.h\
 	internal.h\
 	latin1tab.h\
+	libexpat.def\
+	libexpatw.def\
 	nametab.h\
 	siphash.h\
 	utf8tab.h\
 	winconfig.h\
 	xmlrole.h\
 	xmltok.h\
+	xmltok_impl.c\
 	xmltok_impl.h\
+	xmltok_ns.c\
 
 LIB=/$objtype/lib/ape/libexpat.a
 
@@ -37,4 +46,4 @@ xmltok.$O: xmltok.c xmltok_impl.c xmltok_ns.c
 
 install:VQ: $LIB
 	~ $LIBDIR '.' || cp $LIB $LIBDIR/$LIB
-	cp expat.h expat_external.h /sys/include/ape
+	cp $LIBHFILES /sys/include/ape

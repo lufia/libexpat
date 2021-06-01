@@ -1,0 +1,45 @@
+#!/bin/rc
+
+flag e +
+
+cat <<!
+HAVE_ARC4RANDOM_BUF 1
+HAVE_GETPAGESIZE 1
+HAVE_INTTYPES_H 1
+HAVE_STDINT_H 1
+HAVE_STDLIB_H 1
+HAVE_STRING_H 1
+HAVE_SYS_STAT_H 1
+HAVE_SYS_TYPES_H 1
+HAVE_UNISTD_H 1
+STDC_HEADERS 1
+!
+
+sed -n '
+/[ 	]+VERSION$/{
+	N
+	s/[ 	]+VERSION\n/PROJECT_VERSION/
+	p
+}
+/^set\(/{
+	s///
+	s/ CACHE .*//
+	s/"//g
+	s/\).*//
+	p
+}
+/^option\(/{
+	s///
+	s/"[^"]+"//
+	s/\).*//
+	s/ON/1/
+	s/OFF/0/
+	p
+}
+/^_expat_copy_bool_int\(/{
+	s///
+	s/\).*//
+	s/([A-Z0-9_]+)[ 	]+([A-Z0-9_]+)/\2 ${\1}/
+	p
+}
+' $*

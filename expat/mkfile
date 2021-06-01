@@ -1,0 +1,42 @@
+</sys/src/ape/config
+
+TARG=\
+	expat_config.h\
+
+CONFIG=expat_config.plan9
+
+CMFILES=\
+	expat_config.h.cmake\
+
+CMDS=\
+	plan9/genconfig.rc\
+	plan9/mkconfig.rc\
+	plan9/$O.config\
+
+CMLIST=CMakeLists.txt
+
+DIRS=\
+	lib\
+	tests\
+
+all:V: $DIRS
+
+$DIRS:V: $TARG
+	for(i in $target) @{
+		cd $i
+		echo '----'$i'----'
+		mk $MKFLAGS
+	}
+
+plan9/$O.%: plan9/%.c
+	$CC $CFLAGS -o $target $prereq
+
+$CONFIG:D: $CMLIST $CMDS
+	./plan9/$O.config >$target
+	./plan9/mkconfig.rc $CMLIST >>$target
+
+expat_config.h:D: $CMFILES $CONFIG
+	./plan9/genconfig.rc $CONFIG $CMFILES >$target
+
+clean:V:
+	rm -rf plan9/*.[$OS] plan9/[$OS].* $TARG $CONFIG
